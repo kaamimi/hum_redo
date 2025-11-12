@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import './widgets/new_memory_appbar.dart';
 import './widgets/image_preview.dart';
@@ -171,6 +172,17 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
             ],
           ),
         ),
+        bottomNavigationBar: _hasContent
+            ? SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    DateFormat('hh:mm a').format(_selectedDate),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }
