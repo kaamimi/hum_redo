@@ -86,7 +86,7 @@ class MemoryTile extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      child: Center(child: Icon(icon, color: Colors.white, size: 32)),
+      child: Center(child: Icon(icon, size: 32)),
     );
   }
 

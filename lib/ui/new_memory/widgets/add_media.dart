@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '/core/constants.dart';
 
 class AddMedia extends StatelessWidget {
@@ -14,18 +13,28 @@ class AddMedia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
+        // Image button
         TextButton.icon(
           onPressed: onImagePressed,
-          label: Text('Image'),
           icon: const Icon(Icons.photo_library_outlined, size: navBarIconSize),
+          label: const Text('Image'),
+          style: TextButton.styleFrom(
+            foregroundColor: theme.colorScheme.onSurface,
+          ),
         ),
+
+        // Voice button
         TextButton.icon(
           onPressed: onVoicePressed,
-          label: Text('Voice Note'),
           icon: const Icon(Icons.mic_none_outlined, size: navBarIconSize),
+          label: const Text('Voice Note'),
+          style: TextButton.styleFrom(
+            foregroundColor: theme.colorScheme.onSurface,
+          ),
         ),
       ],
     );

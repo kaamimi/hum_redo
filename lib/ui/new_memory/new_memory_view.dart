@@ -21,6 +21,7 @@ class NewMemoryView extends ConsumerStatefulWidget {
 class _NewMemoryViewState extends ConsumerState<NewMemoryView>
     with WidgetsBindingObserver {
   File? _pickedImage;
+  // File? _pickedVoiceNote;
   DateTime _selectedDate = DateTime.now();
 
   final TextEditingController _textController = TextEditingController();
@@ -57,13 +58,17 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
     return result ?? false;
   }
 
+  void _handleImageRemoved() {
+    if (mounted) setState(() => _pickedImage = null);
+  }
+
   Future<void> _handleImagePressed() async {
     final picker = ref.read(imageHandlerProvider);
     File? image = await picker.pickFromGallery();
     if (image != null && mounted) setState(() => _pickedImage = image);
   }
 
-  void _onVoicePressed() {
+  void _placeholder() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -86,9 +91,7 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
     // Invalidate the memories provider to refresh the list
     ref.invalidate(allMemoriesProvider);
 
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -130,51 +133,52 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
 
   @override
   Widget build(BuildContext context) {
-    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-
         final shouldPop = await _confirmDiscard();
-        if (shouldPop && context.mounted) {
-          Navigator.of(context).pop(result);
-        }
+        if (shouldPop && context.mounted) Navigator.of(context).pop(result);
       },
       child: Scaffold(
         appBar: NewMemoryAppbar(
           hasContent: _hasContent,
           selectedDate: _selectedDate,
-          onDateChanged: (newDate) {
-            if (mounted) setState(() => _selectedDate = newDate);
-          },
+          hasImage: _pickedImage != null,
+          onDateChanged: (newDate) => setState(() => _selectedDate = newDate),
           onSavePressed: _handleSavePressed,
+          onImagePressed: _handleImagePressed,
+          onVoicePressed: _placeholder,
+          onTagsPressed: _placeholder,
         ),
         body: SafeArea(
           child: Column(
             children: [
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  children: [
-                    ImagePreview(
-                      image: _pickedImage,
-                      onLongPress: _handleImagePressed,
-                    ),
-                    NoteTextField(
-                      controller: _textController,
-                      focusNode: _textFieldFocusNode,
-                    ),
-                  ],
+                child: GestureDetector(
+                  onTap: _textFieldFocusNode.requestFocus,
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    children: [
+                      ImagePreview(
+                        image: _pickedImage,
+                        onLongPress: _handleImagePressed,
+                        onRemove: _handleImageRemoved,
+                      ),
+                      NoteTextField(
+                        controller: _textController,
+                        focusNode: _textFieldFocusNode,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              if (isKeyboardOpen && !_hasContent)
+              if (!_hasContent)
                 SizedBox(
-                  height: kToolbarHeight,
+                  height: kToolbarHeight + 8,
                   child: AddMedia(
                     onImagePressed: _handleImagePressed,
-                    onVoicePressed: _onVoicePressed,
+                    onVoicePressed: _placeholder,
                   ),
                 ),
             ],

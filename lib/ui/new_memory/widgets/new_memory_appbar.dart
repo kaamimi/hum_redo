@@ -8,12 +8,22 @@ class NewMemoryAppbar extends StatelessWidget implements PreferredSizeWidget {
     required this.selectedDate,
     required this.onDateChanged,
     this.onSavePressed,
+    this.onImagePressed,
+    this.onVoicePressed,
+    this.onTagsPressed,
+    this.hasImage = false,
+    this.hasVoiceNote = false,
   });
 
   final bool hasContent;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateChanged;
   final Future<void> Function()? onSavePressed;
+  final VoidCallback? onImagePressed;
+  final VoidCallback? onVoicePressed;
+  final VoidCallback? onTagsPressed;
+  final bool hasImage;
+  final bool hasVoiceNote;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -63,19 +73,42 @@ class NewMemoryAppbar extends StatelessWidget implements PreferredSizeWidget {
             onPressed: onSavePressed,
             icon: Icon(Icons.check, color: checkIconColor),
           ),
-        IconButton(
+        _buildMoreMenu(),
+      ],
+    );
+  }
+
+  Widget _buildMoreMenu() {
+    return MenuAnchor(
+      builder: (context, controller, child) {
+        return IconButton(
           onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return SizedBox(
-                  height: 200,
-                  child: Center(child: Text("Placeholder")),
-                );
-              },
-            );
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
           },
           icon: const Icon(Icons.more_vert_rounded),
+        );
+      },
+      menuChildren: [
+        if (!hasImage)
+          MenuItemButton(
+            onPressed: onImagePressed,
+            leadingIcon: const Icon(Icons.image_outlined),
+            child: const Text("Image"),
+          ),
+        if (!hasVoiceNote)
+          MenuItemButton(
+            onPressed: onVoicePressed,
+            leadingIcon: const Icon(Icons.mic_none_outlined),
+            child: const Text("Voice Note"),
+          ),
+        MenuItemButton(
+          onPressed: onTagsPressed,
+          leadingIcon: const Icon(Icons.local_offer_outlined),
+          child: const Text("Tags"),
         ),
       ],
     );
