@@ -27,12 +27,15 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocusNode = FocusNode();
 
-  double _lastViewInsetsBottom = 0;
+  late double _lastViewInsetsBottom;
+
+  double get _currentViewInsetsBottom =>
+      WidgetsBinding.instance.platformDispatcher.views.first.viewInsets.bottom;
 
   bool get _hasContent =>
       _pickedImage != null || _textController.text.trim().isNotEmpty;
 
-  Future<bool> _confirmDiscard() async {
+  Future<bool> _confirmDiscardAlert() async {
     if (!_hasContent) return true;
 
     final result = await showDialog<bool>(
@@ -56,10 +59,6 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
     );
 
     return result ?? false;
-  }
-
-  void _handleImageRemoved() {
-    if (mounted) setState(() => _pickedImage = null);
   }
 
   Future<void> _handleImagePressed() async {
@@ -98,10 +97,8 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
   void initState() {
     super.initState();
     _textController.addListener(() => setState(() {}));
-
-    final view = WidgetsBinding.instance.platformDispatcher.views.first;
-    _lastViewInsetsBottom = view.viewInsets.bottom;
     WidgetsBinding.instance.addObserver(this);
+    _lastViewInsetsBottom = _currentViewInsetsBottom;
   }
 
   @override
@@ -114,13 +111,7 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
 
   @override
   void didChangeMetrics() {
-    final bottom = WidgetsBinding
-        .instance
-        .platformDispatcher
-        .views
-        .first
-        .viewInsets
-        .bottom;
+    final bottom = _currentViewInsetsBottom;
 
     // If keyboard went from visible (>0) to hidden (0) and TextField still focused, unfocus it.
     if (_lastViewInsetsBottom > 0 &&
@@ -137,7 +128,7 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        final shouldPop = await _confirmDiscard();
+        final shouldPop = await _confirmDiscardAlert();
         if (shouldPop && context.mounted) Navigator.of(context).pop(result);
       },
       child: Scaffold(
@@ -155,22 +146,18 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
           child: Column(
             children: [
               Expanded(
-                child: GestureDetector(
-                  onTap: _textFieldFocusNode.requestFocus,
-                  child: ListView(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    children: [
-                      ImagePreview(
-                        image: _pickedImage,
-                        onLongPress: _handleImagePressed,
-                        onRemove: _handleImageRemoved,
-                      ),
-                      NoteTextField(
-                        controller: _textController,
-                        focusNode: _textFieldFocusNode,
-                      ),
-                    ],
-                  ),
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  children: [
+                    ImagePreview(
+                      image: _pickedImage,
+                      onRemove: () => setState(() => _pickedImage = null),
+                    ),
+                    NoteTextField(
+                      controller: _textController,
+                      focusNode: _textFieldFocusNode,
+                    ),
+                  ],
                 ),
               ),
               if (!_hasContent)

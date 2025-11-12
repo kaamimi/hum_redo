@@ -19,14 +19,16 @@ class _HumBaseState extends State<HumBase> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const NewMemoryView()),
-        ),
-        tooltip: 'New Memory',
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: MediaQuery.of(context).viewInsets.bottom > 0
+          ? null
+          : FloatingActionButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NewMemoryView()),
+              ),
+              tooltip: 'New Memory',
+              child: Icon(Icons.add),
+            ),
       bottomNavigationBar: BaseNavbar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (value) =>
