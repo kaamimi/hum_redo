@@ -26,15 +26,11 @@ class ImagePreview extends StatelessWidget {
               onTap: onRemove,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
                 padding: const EdgeInsets.all(4),
-                child: Icon(
-                  Icons.close_rounded,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
+                child: Icon(Icons.close_rounded, size: 16, color: Colors.white),
               ),
             ),
           ),

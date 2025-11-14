@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/data/models/memory.dart';
 import '/ui/collections/collections_view_model.dart';
+import '/ui/home/home_view_model.dart';
 import './widgets/memory_image.dart';
 import './widgets/memory_note.dart';
 import './widgets/memory_metadata.dart';
@@ -38,6 +39,7 @@ class MemoryView extends ConsumerWidget {
     if (confirmed ?? false) {
       await ref.read(deleteMemoryProvider(memory.id).future);
       ref.invalidate(allMemoriesProvider);
+      ref.invalidate(recentMemoriesProvider);
 
       if (context.mounted) {
         Navigator.of(context).pop();
@@ -49,17 +51,43 @@ class MemoryView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Memory'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // TODO: Navigate to edit memory
-            },
+            onPressed: () {},
+            icon: const Icon(Icons.favorite_outline_rounded),
           ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _handleDelete(context, ref),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.edit_outlined)),
+          MenuAnchor(
+            builder: (context, controller, child) {
+              return IconButton(
+                onPressed: () {
+                  if (controller.isOpen) {
+                    controller.close();
+                  } else {
+                    controller.open();
+                  }
+                },
+                icon: const Icon(Icons.more_vert_rounded),
+              );
+            },
+            menuChildren: [
+              MenuItemButton(
+                onPressed: () {},
+                leadingIcon: const Icon(Icons.local_offer_outlined),
+                child: const Text('Tags'),
+              ),
+              MenuItemButton(
+                onPressed: () => _handleDelete(context, ref),
+                leadingIcon: Icon(
+                  Icons.delete_outline,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            ],
           ),
         ],
       ),

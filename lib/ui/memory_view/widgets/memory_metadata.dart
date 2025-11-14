@@ -9,7 +9,7 @@ class MemoryMetadata extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,6 +52,6 @@ class MemoryMetadata extends StatelessWidget {
       'November',
       'December',
     ];
-    return '${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    return '${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}\n${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }

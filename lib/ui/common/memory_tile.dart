@@ -74,10 +74,10 @@ class MemoryTile extends StatelessWidget {
               height: 80,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                return _buildPlaceholder(context, Icons.image);
+                return _buildPlaceholder(context, Icons.image_outlined);
               },
             )
-          : _buildPlaceholder(context, Icons.note),
+          : _buildPlaceholder(context, Icons.sticky_note_2_outlined),
     );
   }
 

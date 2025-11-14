@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/core/services/theme_toggle.dart';
 import '/ui/home/widgets/week_timeline.dart';
 import '/ui/home/widgets/streak_card.dart';
+import '/ui/home/widgets/recent_memories.dart';
 
 class HomeView extends ConsumerWidget {
   const HomeView({super.key});
@@ -14,7 +15,10 @@ class HomeView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hello, Kami'),
+        title: const Text(
+          'Hello, Kami',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -26,8 +30,15 @@ class HomeView extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [CurrentWeekTimeline(), StreakCard(currentStreak: 30)],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            CurrentWeekTimeline(),
+            StreakCard(currentStreak: 30),
+            const SizedBox(height: 16),
+            RecentMemories(),
+          ],
+        ),
       ),
     );
   }

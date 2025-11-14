@@ -10,11 +10,12 @@ class MemoryImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.file(
       File(imageUrl),
-      fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return SizedBox(
           height: 300,
-          child: const Center(child: Icon(Icons.image_not_supported, size: 48)),
+          child: const Center(
+            child: Icon(Icons.image_not_supported_outlined, size: 48),
+          ),
         );
       },
     );

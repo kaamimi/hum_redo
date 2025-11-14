@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/ui/common/memory_tile.dart';
 import './collections_view_model.dart';
-import './widgets/memory_tile.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({super.key});
@@ -12,7 +12,12 @@ class CollectionsView extends ConsumerWidget {
     final memoriesAsync = ref.watch(allMemoriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Collections')),
+      appBar: AppBar(
+        title: const Text(
+          'Collections',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
       body: memoriesAsync.when(
         data: (memories) {
           if (memories.isEmpty) {

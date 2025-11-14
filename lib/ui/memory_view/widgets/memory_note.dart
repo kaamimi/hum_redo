@@ -8,18 +8,11 @@ class MemoryNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Divider(),
-          const SizedBox(height: 16),
-          Text(
-            note,
-            style: Theme.of(context).textTheme.bodyLarge,
-            softWrap: true,
-          ),
-        ],
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        note,
+        style: Theme.of(context).textTheme.bodyLarge,
+        softWrap: true,
       ),
     );
   }
