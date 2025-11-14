@@ -8,8 +8,7 @@ import './widgets/image_preview.dart';
 import './widgets/note_text_field.dart';
 import './widgets/add_media.dart';
 import './new_memory_view_model.dart';
-import '/ui/collections/collections_view_model.dart';
-import '/ui/home/home_view_model.dart';
+import '/ui/common/recents_view_model.dart';
 
 // TODO: Tapping on free space below TextField should focus on it if unfocused.
 
@@ -90,7 +89,6 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
     );
 
     // Invalidate the memories providers to refresh the lists
-    ref.invalidate(allMemoriesProvider);
     ref.invalidate(recentMemoriesProvider);
 
     if (mounted) Navigator.of(context).pop();

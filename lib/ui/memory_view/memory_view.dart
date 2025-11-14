@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/data/models/memory.dart';
-import '/ui/collections/collections_view_model.dart';
-import '/ui/home/home_view_model.dart';
+import '/ui/common/recents_view_model.dart';
 import './widgets/memory_image.dart';
 import './widgets/memory_note.dart';
 import './widgets/memory_metadata.dart';
@@ -38,7 +37,6 @@ class MemoryView extends ConsumerWidget {
 
     if (confirmed ?? false) {
       await ref.read(deleteMemoryProvider(memory.id).future);
-      ref.invalidate(allMemoriesProvider);
       ref.invalidate(recentMemoriesProvider);
 
       if (context.mounted) {

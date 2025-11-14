@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/ui/home/home_view_model.dart';
+import '/ui/common/recents_view_model.dart';
 import '/ui/common/memory_tile.dart';
 
 class RecentMemories extends ConsumerWidget {
@@ -9,7 +9,7 @@ class RecentMemories extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recentMemoriesAsync = ref.watch(recentMemoriesProvider);
+    final recentsAsync = ref.watch(recentMemoriesProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -17,13 +17,13 @@ class RecentMemories extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Text(
-            'Recent Memories',
+            'Recents',
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
-        recentMemoriesAsync.when(
+        recentsAsync.when(
           data: (memories) {
             if (memories.isEmpty) {
               return SizedBox(
@@ -36,7 +36,6 @@ class RecentMemories extends ConsumerWidget {
                 ),
               );
             }
-
             return Column(
               children: memories
                   .map((memory) => MemoryTile(memory: memory))
