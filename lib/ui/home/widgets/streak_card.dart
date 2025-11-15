@@ -17,7 +17,6 @@ class StreakCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0,
       child: InkWell(
         onTap: onTap,
         child: Padding(

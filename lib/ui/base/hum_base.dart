@@ -3,7 +3,7 @@ import 'package:hum/ui/base/widgets/base_navbar.dart';
 
 import '/ui/home/home_view.dart';
 import '/ui/collections/collections_view.dart';
-import '/ui/search/search_view.dart';
+import '/ui/people/people_view.dart';
 import '/ui/new_memory/new_memory_view.dart';
 
 class HumBase extends StatefulWidget {
@@ -34,7 +34,7 @@ class _HumBaseState extends State<HumBase> {
         onDestinationSelected: (value) =>
             setState(() => _selectedIndex = value),
       ),
-      body: [HomeView(), CollectionsView(), SearchView()][_selectedIndex],
+      body: [HomeView(), CollectionsView(), PeopleView()][_selectedIndex],
     );
   }
 }

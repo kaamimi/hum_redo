@@ -34,7 +34,10 @@ class HomeView extends ConsumerWidget {
         child: Column(
           children: [
             CurrentWeekTimeline(),
-            StreakCard(currentStreak: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: StreakCard(currentStreak: 30),
+            ),
             const SizedBox(height: 16),
             RecentMemories(),
           ],

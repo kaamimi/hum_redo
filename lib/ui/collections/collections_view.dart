@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CollectionsView extends ConsumerWidget {
+import './widgets/search_bar.dart';
+
+class CollectionsView extends StatelessWidget {
   const CollectionsView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Collections',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
+  Widget build(BuildContext context) {
+    return const Scaffold(appBar: SearchAppBar());
   }
 }
