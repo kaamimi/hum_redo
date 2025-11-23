@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -21,10 +20,6 @@ class NewMemoryView extends ConsumerStatefulWidget {
 
 class _NewMemoryViewState extends ConsumerState<NewMemoryView>
     with WidgetsBindingObserver {
-  File? _pickedImage;
-  // File? _pickedVoiceNote;
-  DateTime _selectedDate = DateTime.now();
-
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocusNode = FocusNode();
 
@@ -33,11 +28,9 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
   double get _currentViewInsetsBottom =>
       WidgetsBinding.instance.platformDispatcher.views.first.viewInsets.bottom;
 
-  bool get _hasContent =>
-      _pickedImage != null || _textController.text.trim().isNotEmpty;
-
   Future<bool> _confirmDiscardAlert() async {
-    if (!_hasContent) return true;
+    final viewModel = ref.read(newMemoryViewModelProvider);
+    if (!viewModel.hasContent) return true;
 
     final result = await showDialog<bool>(
       context: context,
@@ -63,9 +56,7 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
   }
 
   Future<void> _handleImagePressed() async {
-    final picker = ref.read(imageHandlerProvider);
-    File? image = await picker.pickFromGallery();
-    if (image != null && mounted) setState(() => _pickedImage = image);
+    await ref.read(newMemoryViewModelProvider.notifier).pickImage();
   }
 
   void _placeholder() {
@@ -78,26 +69,31 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
   }
 
   Future<void> _handleSavePressed() async {
-    final note = _textController.text.trim();
+    final success = await ref
+        .read(newMemoryViewModelProvider.notifier)
+        .saveMemory();
 
-    await ref.read(
-      saveMemoryProvider((
-        note: note.isNotEmpty ? note : null,
-        imageFile: _pickedImage,
-        createdAt: _selectedDate,
-      )).future,
-    );
-
-    // Invalidate the memories providers to refresh the lists
-    ref.invalidate(recentMemoriesProvider);
-
-    if (mounted) Navigator.of(context).pop();
+    if (success) {
+      ref.invalidate(recentMemoriesProvider);
+      if (mounted) Navigator.of(context).pop();
+    } else {
+      final error = ref.read(newMemoryViewModelProvider).error;
+      if (error != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error)));
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _textController.addListener(() => setState(() {}));
+    _textController.addListener(() {
+      ref
+          .read(newMemoryViewModelProvider.notifier)
+          .updateNote(_textController.text);
+    });
     WidgetsBinding.instance.addObserver(this);
     _lastViewInsetsBottom = _currentViewInsetsBottom;
   }
@@ -125,6 +121,8 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(newMemoryViewModelProvider);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -134,10 +132,11 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
       },
       child: Scaffold(
         appBar: NewMemoryAppbar(
-          hasContent: _hasContent,
-          selectedDate: _selectedDate,
-          hasImage: _pickedImage != null,
-          onDateChanged: (newDate) => setState(() => _selectedDate = newDate),
+          hasContent: state.hasContent,
+          selectedDate: state.selectedDate,
+          hasImage: state.pickedImage != null,
+          onDateChanged: (newDate) =>
+              ref.read(newMemoryViewModelProvider.notifier).updateDate(newDate),
           onSavePressed: _handleSavePressed,
           onImagePressed: _handleImagePressed,
           onVoicePressed: _placeholder,
@@ -151,8 +150,10 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
                   padding: const EdgeInsets.only(bottom: 8),
                   children: [
                     ImagePreview(
-                      image: _pickedImage,
-                      onRemove: () => setState(() => _pickedImage = null),
+                      image: state.pickedImage,
+                      onRemove: () => ref
+                          .read(newMemoryViewModelProvider.notifier)
+                          .removeImage(),
                     ),
                     NoteTextField(
                       controller: _textController,
@@ -161,7 +162,7 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
                   ],
                 ),
               ),
-              if (!_hasContent)
+              if (!state.hasContent)
                 SizedBox(
                   height: kToolbarHeight + 8,
                   child: AddMedia(
@@ -172,12 +173,12 @@ class _NewMemoryViewState extends ConsumerState<NewMemoryView>
             ],
           ),
         ),
-        bottomNavigationBar: _hasContent
+        bottomNavigationBar: state.hasContent
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    DateFormat('hh:mm a').format(_selectedDate),
+                    DateFormat('hh:mm a').format(state.selectedDate),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),

@@ -14,11 +14,6 @@ class CollectionsState {
   }
 }
 
-final collectionsViewModelProvider =
-    NotifierProvider.autoDispose<CollectionsViewModel, CollectionsState>(
-      CollectionsViewModel.new,
-    );
-
 class CollectionsViewModel extends Notifier<CollectionsState> {
   @override
   CollectionsState build() => const CollectionsState();
@@ -31,3 +26,8 @@ class CollectionsViewModel extends Notifier<CollectionsState> {
     state = state.copyWith(searchQuery: query);
   }
 }
+
+final collectionsViewModelProvider =
+    NotifierProvider.autoDispose<CollectionsViewModel, CollectionsState>(
+      CollectionsViewModel.new,
+    );

@@ -1,56 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../collections_view_model.dart';
 
-class SearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  const SearchAppBar({super.key});
+class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final bool isSearching;
+  final VoidCallback onToggleSearch;
+  final ValueChanged<String> onSearchQueryChanged;
+
+  const SearchAppBar({
+    super.key,
+    required this.isSearching,
+    required this.onToggleSearch,
+    required this.onSearchQueryChanged,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(collectionsViewModelProvider);
-    final viewModel = ref.read(collectionsViewModelProvider.notifier);
-
-    return AppBar(
-      title: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 150),
-        child: state.isSearching
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: !isSearching,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && isSearching) onToggleSearch();
+      },
+      child: AppBar(
+        title: isSearching
             ? TextField(
                 autofocus: true,
-                onChanged: (value) {
-                  viewModel.updateSearchQuery(value);
-                },
+                onChanged: onSearchQueryChanged,
                 decoration: InputDecoration(
-                  prefixIcon: IconButton(
-                    onPressed: () {
-                      viewModel.toggleSearch();
-                    },
-                    icon: const Icon(Icons.arrow_back_rounded),
-                  ),
                   hintText: 'Search collections',
+                  filled: true,
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(32),
                   ),
-                  filled: true,
+
+                  // Back button
+                  prefixIcon: IconButton(
+                    icon: const Icon(Icons.arrow_back_rounded),
+                    onPressed: onToggleSearch,
+                  ),
                 ),
               )
             : const Text(
-                "Collections",
+                'Collections',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
+        actions: [
+          if (!isSearching)
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: onToggleSearch,
+            ),
+        ],
       ),
-      actions: [
-        if (!state.isSearching)
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              viewModel.toggleSearch();
-            },
-          ),
-      ],
     );
   }
 }

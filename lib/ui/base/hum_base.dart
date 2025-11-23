@@ -22,6 +22,7 @@ class _HumBaseState extends State<HumBase> {
       floatingActionButton: MediaQuery.of(context).viewInsets.bottom > 0
           ? null
           : FloatingActionButton(
+              heroTag: 'main_fab',
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const NewMemoryView()),
